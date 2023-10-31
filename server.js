@@ -6,12 +6,12 @@ const cors = require("cors");
 const app = express();
   
 var corsOptions = {
-  origin: "http://localhost:8080"
+  origin: "http://localhost:3000"
 };
 
 app.use(cors(corsOptions));
 
-// Connect Database
+// Connect Database 
 connectDB();
 
 // Init Middleware 
@@ -24,7 +24,6 @@ app.use(express.urlencoded({extended:true}));
 // Define Routes
 app.use('/api/users', require('./routes/api/users'));
 app.use('/api/auth', require('./routes/api/auth'));
-app.use('/api/products', require('./routes/api/products'));
 
 // Serve static assets in production
 if (process.env.NODE_ENV === 'production') {

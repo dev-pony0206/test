@@ -6,7 +6,7 @@ const config = require("config");
 const { check, validationResult } = require("express-validator");
 
 const User = require("../../models/User");
-
+ 
 router.post(
   "/signup",
   check("name", "Name is required").notEmpty(),

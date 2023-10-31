@@ -24,4 +24,4 @@ module.exports = function (req, res, next) {
     console.error('something wrong with auth middleware');
     res.status(500).json({ msg: 'Server Error' });
   }
-};
+}; 

@@ -4,7 +4,8 @@
   "description": "node.js backend for test",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server"
   },
   "keywords": [
     "node.js",
@@ -18,6 +19,7 @@
   "homepage": "https://github.com/ChristoperCarter0206/test#readme",
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "cjs": "^0.0.11",
     "config": "^3.3.9",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
