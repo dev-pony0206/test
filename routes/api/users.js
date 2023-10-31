@@ -1,27 +1,32 @@
 const express = require("express");
 const router = express.Router();
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-const config = require("config");
 const { check, validationResult } = require("express-validator");
+const cors = require("cors");
 
 const User = require("../../models/User");
- 
+const upload = require("../../middleware/multer");
+
+// middle ware
+express().use(express.static("public")); //to access the files in public folder
+express().use(cors()); // it enables all cors requests
+
 router.post(
-  "/signup",
-  check("name", "Name is required").notEmpty(),
+  "/user-profile",
   check("email", "Please include a valid email").isEmail(),
-  check(
-    "password",
-    "Please enter a password with 6 or more characters"
-  ).isLength({ min: 6 }),
+  check("name", "Name is required").exists(),
+  check("gender", "Gender must be selected").exists(),
+  check("age", "Age is required").exists(),
+
+  upload.single("file"),
   async (req, res) => {
     const errors = validationResult(req);
+
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { name, email, password } = req.body;
+    const { name, email, gender, age } = req.body;
+    const { photo } = req.file;
 
     try {
       let user = await User.findOne({ email });
@@ -29,41 +34,78 @@ router.post(
       if (user) {
         return res
           .status(400)
-          .json({ errors: [{ msg: "User already exists" }] });
+          .json({ errors: [{ msg: "user already exists" }] });
       }
 
       user = new User({
         name,
         email,
-        password
+        gender,
+        age,
+        photo
       });
-
-      const salt = await bcrypt.genSalt(10);
-
-      user.password = await bcrypt.hash(password, salt);
 
       await user.save();
 
-      const payload = {
-        user: {
-          id: user.id
-        }
-      };
-
-      jwt.sign(
-        payload,
-        config.get("jwtSecret"),
-        { expiresIn: "3 days" },
-        (err, token) => {
-          if (err) throw err;
-          res.json({ token });
-        }
-      );
+      res.send("Registered Successfully!");
     } catch (err) {
       console.error(err.message);
       res.status(500).send("Server error");
     }
   }
 );
+
+router.get("/get-users", async (req, res) => {
+  try {
+    const page = parseInt(req.query.page);
+    const pageSize = parseInt(req.query.pageSize);
+
+    // Calculate the start and end indexes for the requested page
+    const startIndex = (page - 1) * pageSize;
+    const endIndex = page * pageSize;
+
+    // Slice the products array based on the indexes
+    const paginatedProducts = products.slice(startIndex, endIndex);
+
+    // Calculate the total number of pages
+    const totalPages = Math.ceil(products.length / pageSize);
+
+    // Send the paginated products and total pages as the API response
+    res.send({ products: paginatedProducts, totalPages });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server error");
+  }
+});
+
+router.post("/update-users", upload.single("file"), async (req, res) => {
+  try {
+    const id = req.body.id;
+
+    await User.findByIdAndUpdate(id, {
+      name: req.body.name,
+      gender: req.body.gender,
+      age: req.body.age,
+      image: req.file.filename,
+      date_u: Date.now()
+    });
+
+    res.json("success");
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server error");
+  }
+});
+
+router.post("/delete-users", async (req, res) => {
+  try {
+    const id = req.body.id;
+    await User.findByIdAndDelete(id);
+    res.send("success");
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server error");
+  }
+});
 
 module.exports = router;

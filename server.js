@@ -22,8 +22,8 @@ express().use(express.static('public')); //to access the files in public folder
 app.use(express.urlencoded({extended:true}));
 
 // Define Routes
-app.use('/api/users', require('./routes/api/users'));
-app.use('/api/auth', require('./routes/api/auth'));
+app.use('/api/admins', require('./routes/api/admin-signup.js'));
+app.use('/api/auth', require('./routes/api/admin-login.js'));
 
 // Serve static assets in production
 if (process.env.NODE_ENV === 'production') {
