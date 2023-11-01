@@ -4,6 +4,7 @@ const { check, validationResult } = require("express-validator");
 const cors = require("cors");
 
 const User = require("../../models/User");
+const auth = require("../../middleware/auth");
 const upload = require("../../middleware/multer");
 
 // middle ware
@@ -11,12 +12,14 @@ express().use(express.static("public")); //to access the files in public folder
 express().use(cors()); // it enables all cors requests
 
 router.post(
-  "/user-profile",
-  check("email", "Please include a valid email").isEmail(),
-  check("name", "Name is required").exists(),
-  check("gender", "Gender must be selected").exists(),
-  check("age", "Age is required").exists(),
-
+  "/register",
+  [
+    auth,
+    check("email", "Please include a valid email").isEmail(),
+    check("name", "Name is required").exists(),
+    check("gender", "Gender must be selected").exists(),
+    check("age", "Age is required").exists()
+  ],
   upload.single("file"),
   async (req, res) => {
     const errors = validationResult(req);
@@ -55,7 +58,7 @@ router.post(
   }
 );
 
-router.get("/get-users", async (req, res) => {
+router.get("/list", auth, async (req, res) => {
   try {
     const page = parseInt(req.query.page);
     const pageSize = parseInt(req.query.pageSize);
@@ -64,21 +67,22 @@ router.get("/get-users", async (req, res) => {
     const startIndex = (page - 1) * pageSize;
     const endIndex = page * pageSize;
 
-    // Slice the products array based on the indexes
-    const paginatedProducts = products.slice(startIndex, endIndex);
+    // Slice the users array based on the indexes
+    const users = await User.find(filter);
+    const paginatedUsers = users.slice(startIndex, endIndex);
 
     // Calculate the total number of pages
     const totalPages = Math.ceil(products.length / pageSize);
 
-    // Send the paginated products and total pages as the API response
-    res.send({ products: paginatedProducts, totalPages });
+    // Send the paginated users and total pages as the API response
+    res.send({ users: paginatedUsers, totalPages });
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server error");
   }
 });
 
-router.post("/update-users", upload.single("file"), async (req, res) => {
+router.post("/update", auth, upload.single("file"), async (req, res) => {
   try {
     const id = req.body.id;
 
@@ -86,7 +90,7 @@ router.post("/update-users", upload.single("file"), async (req, res) => {
       name: req.body.name,
       gender: req.body.gender,
       age: req.body.age,
-      image: req.file.filename,
+      photo: req.file.filename,
       date_u: Date.now()
     });
 
@@ -97,7 +101,7 @@ router.post("/update-users", upload.single("file"), async (req, res) => {
   }
 });
 
-router.post("/delete-users", async (req, res) => {
+router.post("/delete", auth, async (req, res) => {
   try {
     const id = req.body.id;
     await User.findByIdAndDelete(id);

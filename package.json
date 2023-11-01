@@ -18,6 +18,8 @@
   },
   "homepage": "https://github.com/ChristoperCarter0206/test#readme",
   "dependencies": {
+    "@pinia/nuxt": "^0.5.1",
+    "axios": "^1.6.0",
     "bcryptjs": "^2.4.3",
     "cjs": "^0.0.11",
     "config": "^3.3.9",
@@ -29,6 +31,7 @@
     "mongoose": "^8.0.0",
     "multer": "^1.4.5-lts.1",
     "nodemon": "^3.0.1",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "pinia": "^2.1.7"
   }
 }
