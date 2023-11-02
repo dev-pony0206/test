@@ -8,7 +8,7 @@ const { check, validationResult } = require("express-validator");
 const Admin = require("../../models/Admin");
 
 router.post(
-  "/login",
+  "/",
   check("email", "Please include a valid email").isEmail(),
   check("password", "Password is required").exists(), 
 

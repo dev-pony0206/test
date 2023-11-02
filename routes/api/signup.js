@@ -14,7 +14,7 @@ express().use(express.static("public")); //to access the files in public folder
 express().use(cors()); // it enables all cors requests
 
 router.post(
-  "/signup",
+  "/",
   check("name", "Name is required").notEmpty(),
   check("email", "Please include a valid email").isEmail(),
   check(
@@ -58,21 +58,6 @@ router.post(
 
       res.send("Registered Successfully!");
 
-      // const payload = {
-      //   user: {
-      //     id: user.id
-      //   }
-      // };
-
-      // jwt.sign(
-      //   payload,
-      //   config.get("jwtSecret"),
-      //   { expiresIn: "3 days" },
-      //   (err, token) => {
-      //     if (err) throw err;
-      //     res.json({ token });
-      //   }
-      // );
     } catch (err) {
       console.error(err.message);
       res.status(500).send("Server error");

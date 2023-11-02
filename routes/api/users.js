@@ -15,12 +15,10 @@ router.post(
   "/register",
   [
     auth,
-    check("email", "Please include a valid email").isEmail(),
     check("name", "Name is required").exists(),
-    check("gender", "Gender must be selected").exists(),
+    check("Score", "Score must be required").exists(),
     check("age", "Age is required").exists()
   ],
-  upload.single("file"),
   async (req, res) => {
     const errors = validationResult(req);
 
@@ -28,11 +26,10 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { name, email, gender, age } = req.body;
-    const { photo } = req.file;
+    const { name, score, age } = req.body;
 
     try {
-      let user = await User.findOne({ email });
+      let user = await User.findOne({ name });
 
       if (user) {
         return res
@@ -42,10 +39,8 @@ router.post(
 
       user = new User({
         name,
-        email,
-        gender,
-        age,
-        photo
+        score,
+        age        
       });
 
       await user.save();
@@ -82,15 +77,14 @@ router.get("/list", auth, async (req, res) => {
   }
 });
 
-router.post("/update", auth, upload.single("file"), async (req, res) => {
+router.post("/update", auth, async (req, res) => {
   try {
     const id = req.body.id;
 
     await User.findByIdAndUpdate(id, {
       name: req.body.name,
-      gender: req.body.gender,
+      score: req.body.score,
       age: req.body.age,
-      photo: req.file.filename,
       date_u: Date.now()
     });
 

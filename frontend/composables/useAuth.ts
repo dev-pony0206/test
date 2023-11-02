@@ -1,11 +1,17 @@
+import { jwtDecode } from "jwt-decode";
+import { storeToRefs } from 'pinia';
+
+import { useMainStore } from '~/store/main'
+
 export const useAuth = () => {
-    const authorized = useAuthorized();
     const cookie = useCookie("token");
     const config = useRuntimeConfig()
+    const main = useMainStore()
+    const { admin } = storeToRefs(main)
 
     const signup = async (formData: any) => {
         try {
-            const data: { id: string } = await $fetch(`${config.public.apiBase}/admin-signup/signup`, {
+            const data: { id: string } = await $fetch(`${config.public.apiBase}/signup`, {
                 method: "POST",
                 body: formData,
             });
@@ -20,7 +26,7 @@ export const useAuth = () => {
 
     const signIn = async (email: string, password: string) => {
         try {
-            const data: { accessToken: string } = await $fetch(`${config.public.apiBase}/admin-login/login`, {
+            const data: { token: string } = await $fetch(`${config.public.apiBase}/login`, {
                 method: "POST",
                 body: {
                     email,
@@ -28,11 +34,13 @@ export const useAuth = () => {
                 },
             });
             if (data) {
-                // localStorage.setUser()
-                authorized.value = true;
-                cookie.value = data.accessToken;
+                const decoded:any = jwtDecode(data.token);
+                console.log('decoded =>', decoded)
+                admin.value = decoded.admin
+                localStorage.setItem('admin', JSON.stringify(data.token));
+                cookie.value = data.token;
                 const router = useRouter();
-                router.push({ path: "/admin" });
+                router.push({ path: "/userlist" });
             }
         } catch (error: any) {
             console.log(error);
@@ -40,9 +48,9 @@ export const useAuth = () => {
     };
 
     const logout = () => {
-        // setUser(null);
+        admin.value = {}
         cookie.value = null;
-        localStorage.removeItem("user");
+        localStorage.removeItem("admin");
         const router = useRouter();
         router.push({ path: "/" });
     };
