@@ -18,12 +18,15 @@
                         <td v-if="!user.editing">{{ user.score }}</td>
                         <td v-if="!user.editing">{{ user.age }}</td>
                         <td v-if="user.editing">{{ id + 1 }}</td>
-                        <td v-if="user.editing"><input type="text" v-model="user.name"></td>
-                        <td v-if="user.editing"><input type="number" v-model="user.score"></td>
-                        <td v-if="user.editing"><input type="number" v-model="user.age"></td>
+                        <td v-if="user.editing"><input type="text" :value="user.name"
+                                v-on:input="(e: any) => updatedUser.name = e.target.value"></td>
+                        <td v-if="user.editing"><input type="number" :value="user.score"
+                                v-on:input="(e: any) => updatedUser.score = e.target.value"></td>
+                        <td v-if="user.editing"><input type="number" :value="user.age"
+                                v-on:input="(e: any) => updatedUser.age = e.target.value"></td>
                         <td>
                             <button v-if="!user.editing" class="edit-button" @click="editUser(user)">Edit</button>
-                            <button v-if="user.editing" class="save-button" @click="saveUser(user,updatedUser)">Save</button>
+                            <button v-if="user.editing" class="save-button" @click="saveUser(updatedUser)">Save</button>
                             <button class="delete-button" @click="deleteUser(id)">Delete</button>
                         </td>
                     </tr>
@@ -49,14 +52,9 @@ const controlUser = useUsers()
 const updatedUser = ref({
     name: "",
     score: "",
-    age: ""
+    age: "",
+    editing: true
 })
-
-// const newUser = ref({
-//     name:"",
-//     score:"",
-//     age:""
-// })
 
 const main = useMainStore()
 const { users }: any = storeToRefs(main)
@@ -68,13 +66,13 @@ const deleteUser = (id: number) => {
 const editUser = (user: any) => {
     user.editing = true
 }
-const saveUser = (updatedUser: any,user :any) => {
-    user.editing = false
+const saveUser = (updatedUser: any) => {
     controlUser.updateUser(updatedUser)
     updatedUser.value = {
         name: "",
         score: "",
-        age: ""
+        age: "",
+        editing: false
     }
 }
 const addUser = () => {
@@ -168,5 +166,4 @@ button {
 
 .add-button:hover {
     background-color: #3e8e41;
-}
-</style>
+}</style>
