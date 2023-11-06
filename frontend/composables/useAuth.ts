@@ -11,7 +11,9 @@ export const useAuth = () => {
 
     const signup = async (formData: any) => {
         try {
-            const data: { id: string } = await $fetch(`${config.public.apiBase}/signup`, {
+            // const router = useRouter();
+            // router.push({ path: "/" });
+            const data = await $fetch(`${config.public.apiBase}/signup/signup`, {
                 method: "POST",
                 body: formData,
             });
@@ -26,6 +28,8 @@ export const useAuth = () => {
 
     const signIn = async (email: string, password: string) => {
         try {
+            // const router = useRouter();
+            // router.push({ path: "/userlist" });
             const data: { token: string } = await $fetch(`${config.public.apiBase}/login`, {
                 method: "POST",
                 body: {
@@ -34,7 +38,7 @@ export const useAuth = () => {
                 },
             });
             if (data) {
-                const decoded:any = jwtDecode(data.token);
+                const decoded: any = jwtDecode(data.token);
                 console.log('decoded =>', decoded)
                 admin.value = decoded.admin
                 localStorage.setItem('admin', JSON.stringify(data.token));

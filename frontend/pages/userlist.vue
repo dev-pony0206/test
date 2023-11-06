@@ -18,21 +18,32 @@
                         <td v-if="!user.editing">{{ user.score }}</td>
                         <td v-if="!user.editing">{{ user.age }}</td>
                         <td v-if="user.editing">{{ id + 1 }}</td>
-                        <td v-if="user.editing"><input type="text" :value="user.name"
+                        <td v-if="user.editing"><input type="text" v-model="user.name"></td>
+                        <td v-if="user.editing"><input type="text" v-model="user.score"></td>
+                        <td v-if="user.editing"><input type="text" v-model="user.age"></td>
+
+                        <!-- <td v-if="user.editing"><input type="text" :value="user.name"
                                 v-on:input="(e: any) => updatedUser.name = e.target.value"></td>
                         <td v-if="user.editing"><input type="number" :value="user.score"
                                 v-on:input="(e: any) => updatedUser.score = e.target.value"></td>
                         <td v-if="user.editing"><input type="number" :value="user.age"
-                                v-on:input="(e: any) => updatedUser.age = e.target.value"></td>
+                                v-on:input="(e: any) => updatedUser.age = e.target.value"></td> -->
+
+                        <!-- <td v-if="user.editing"><input type="text" v-model="user.name"></td>
+                        <td v-if="user.editing"><input type="number" v-model="user.score"></td>
+                        <td v-if="user.editing"><input type="number" v-model="user.age"></td> -->
                         <td>
                             <button v-if="!user.editing" class="edit-button" @click="editUser(user)">Edit</button>
-                            <button v-if="user.editing" class="save-button" @click="saveUser(updatedUser)">Save</button>
+                            <button v-if="user.editing" class="save-button" @click="saveUser(user)">Save</button>
                             <button class="delete-button" @click="deleteUser(id)">Delete</button>
                         </td>
                     </tr>
                 </tbody>
             </table>
-            <button @click="addUser()" class="add-button">Add Row</button>
+            <button @click="addUser()" class="add-button">Add</button>
+            <button @click="next()" class="add-button float-right">Next</button>
+            <button @click="prev()" class="add-button float-right">Prev</button>
+            <p class="float-right mr-6 mt-6">{{ page }} of {{ totalPages }}</p>
         </div>
     </div>
 </template>
@@ -49,34 +60,55 @@ import { ref } from 'vue';
 
 const controlUser = useUsers()
 
-const updatedUser = ref({
-    name: "",
-    score: "",
-    age: "",
-    editing: true
-})
+// const updatedUser = ref({
+//     name: "",
+//     score: "",
+//     age: "",
+//     editing: true
+// })
+
+const prev = async () => {
+    page.value -= 1
+    await controlUser.getUsers()
+}
+
+const next = async () => {
+    page.value += 1
+    await controlUser.getUsers()
+}
 
 const main = useMainStore()
+const userlistBeforeAdd: any = ref(main.users)
 const { users }: any = storeToRefs(main)
-const { pageStatus }: any = storeToRefs(main)
+const { page }: any = storeToRefs(main)
+const { totalPages }: any = storeToRefs(main)
 
 const deleteUser = (id: number) => {
-    controlUser.deleteUser(id)
+    // controlUser.deleteUser(id)
+    users.value.splice(id, 1)
 }
 const editUser = (user: any) => {
     user.editing = true
 }
-const saveUser = (updatedUser: any) => {
-    controlUser.updateUser(updatedUser)
-    updatedUser.value = {
-        name: "",
-        score: "",
-        age: "",
-        editing: false
+const saveUser = (user: any) => {
+    user.editing = false
+    if (userlistBeforeAdd.length == users.length) {
+        console.log("update")
+        controlUser.updateUser(user)
     }
+    else {
+        console.log("register")
+        controlUser.registerUser(user)
+    }
+    // updatedUser.value = {
+    //     name: "",
+    //     score: "",
+    //     age: "",
+    //     editing: false
+    // }
 }
 const addUser = () => {
-    users.value.push({ name: '', email: '', editing: true });
+    users.value.push({ name: '', score: '', age: '', editing: true });
 }
 
 </script>
@@ -166,4 +198,5 @@ button {
 
 .add-button:hover {
     background-color: #3e8e41;
-}</style>
+}
+</style>

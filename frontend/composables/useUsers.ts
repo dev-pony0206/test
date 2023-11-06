@@ -20,16 +20,29 @@ export const useUsers = () => {
             });
             if (data) {
                 async () => {
-                    var {paginatedUsers} = data.users;
+                    var { paginatedUsers } = data.users;
                     if (Array.isArray(paginatedUsers)) {
-                    users.value = paginatedUsers.map((user: any) => {
-                        return user = { ...user, editing: false };
-                    })
-                     users.value = paginatedUsers
-                }
+                        users.value = paginatedUsers.map((paginatedUser) => {
+                            return { ...paginatedUser, editing: false };
+                          });
+                    }
                     pagenum.value += 1
                     totalPages.value = data.users.totalPages
                 }
+            }
+        } catch (error: any) {
+            console.log(error);
+        }
+    };
+
+    const registerUser = async (user: any) => {
+        try {
+            const data = await $fetch(`${config.public.apiBase}/users/register`, {
+                method: "POST",
+                body: user
+            });
+            if (data) {
+                users.value = users.push(user)
             }
         } catch (error: any) {
             console.log(error);
@@ -56,6 +69,9 @@ export const useUsers = () => {
 
     const updateUser = async (payload: any) => {
         try {
+            const updateIndex = users.value.findIndex((user: { id: any; }) => user.id === payload.id)
+            console.log(updateIndex)
+            users.value[updateIndex] = { ...users.value[updateIndex], name: payload.name, score: payload.score, age: payload.age }
 
             const data: any = await $fetch(`${config.public.apiBase}/users/update`, {
                 method: "post",
@@ -76,6 +92,6 @@ export const useUsers = () => {
     };
 
     return {
-        getUsers, deleteUser, updateUser
+        getUsers, registerUser, deleteUser, updateUser
     };
 };

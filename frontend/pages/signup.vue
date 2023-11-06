@@ -28,8 +28,11 @@ const submit = () => {
     formData.append("email", signupUser.email);
     formData.append("password", signupUser.password);
     formData.append("avatar", signupUser.photo);
-    // const signup = useAuth();
-    // signup.signup(formData);
+    signupUser.username = "";
+    signupUser.email = "";
+    signupUser.password = ""
+    const signup = useAuth();
+    signup.signup(formData);
     url.value = "_nuxt/assets/image/userAccount.png";
 };
 </script>
@@ -64,8 +67,8 @@ const submit = () => {
                     name="password"
                     v-model="signupUser.password"
                 />
-                <label for="confirm_password" class="text-white text-2xl">Confirm Password</label>
-                <input class="block w-full h-10 rounded-xl" type="password" name="confirm_password" />
+                <!-- <label for="confirm_password" class="text-white text-2xl">Confirm Password</label>
+                <input class="block w-full h-10 rounded-xl" type="password" name="confirm_password" /> -->
                 <button type="submit" class="text-white bg-purple-900 w-full border rounded-xl h-10">Sign up</button>
             </form>
         </div>
