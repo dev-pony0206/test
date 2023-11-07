@@ -13,9 +13,9 @@ express().use(cors()); // it enables all cors requests
 
 router.post(
   "/register",
-    auth,
+    auth, 
   async (req, res) => {
-
+ 
     const { name, score, age } = req.body;
 
     try {
@@ -63,6 +63,16 @@ router.get("/list", auth, async (req, res) => {
 
     // Send the paginated users and total pages as the API response
     res.send({ paginatedUsers, totalPages });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server error");
+  }
+});
+
+router.get("/all", auth, async (req, res) => {
+  try {
+    const users = await User.find({});
+    res.send(users);
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server error");

@@ -21,21 +21,10 @@
                         <td v-if="user.editing"><input type="text" v-model="user.name"></td>
                         <td v-if="user.editing"><input type="text" v-model="user.score"></td>
                         <td v-if="user.editing"><input type="text" v-model="user.age"></td>
-
-                        <!-- <td v-if="user.editing"><input type="text" :value="user.name"
-                                v-on:input="(e: any) => updatedUser.name = e.target.value"></td>
-                        <td v-if="user.editing"><input type="number" :value="user.score"
-                                v-on:input="(e: any) => updatedUser.score = e.target.value"></td>
-                        <td v-if="user.editing"><input type="number" :value="user.age"
-                                v-on:input="(e: any) => updatedUser.age = e.target.value"></td> -->
-
-                        <!-- <td v-if="user.editing"><input type="text" v-model="user.name"></td>
-                        <td v-if="user.editing"><input type="number" v-model="user.score"></td>
-                        <td v-if="user.editing"><input type="number" v-model="user.age"></td> -->
                         <td>
                             <button v-if="!user.editing" class="edit-button" @click="editUser(user)">Edit</button>
                             <button v-if="user.editing" class="save-button" @click="saveUser(user)">Save</button>
-                            <button class="delete-button" @click="deleteUser(user._id)">Delete</button>
+                            <button class="delete-button" @click="deleteUser(user._id, id)">Delete</button>
                         </td>
                     </tr>
                 </tbody>
@@ -51,7 +40,7 @@
 <script lang="ts" setup>
 definePageMeta({
     layout: "userlist-dashboard",
-    // middleware: "after-auth",
+    middleware: "after-auth"
 });
 
 import { useMainStore } from '~/store/main';
@@ -60,64 +49,53 @@ import { ref } from 'vue';
 
 const controlUser = useUsers()
 
-// const updatedUser = ref({
-//     name: "",
-//     score: "",
-//     age: "",
-//     editing: true
-// })
-
 const prev = async () => {
-    page.value -= 1
-    await controlUser.getUsers()
+    if (page.value >= 2) {
+        page.value -= 1
+        await controlUser.getUsers()
+    }
+    return
 }
 
 const next = async () => {
-    page.value += 1
-    await controlUser.getUsers()
+    if (page.value <= totalPages.value - 1) {
+        page.value += 1
+        await controlUser.getUsers()
+    }
+    return
 }
 
 const main = useMainStore()
-const userlistBeforeAdd: any = ref(main.users)
+const userlistBeforeAdd: any = ref(0)
 const { users }: any = storeToRefs(main)
 const { page }: any = storeToRefs(main)
 const { totalPages }: any = storeToRefs(main)
 
-const deleteUser = (id: number) => {
-    controlUser.deleteUser(id)
-    // users.value.splice(id, 1)
+const deleteUser = (_id: string, id: number) => {
+    controlUser.deleteUser(_id, id)
 }
 const editUser = (user: any) => {
     user.editing = true
 }
+
 const saveUser = (user: any) => {
     user.editing = false
-    // if (userlistBeforeAdd.length == users.length) {
-    //     console.log("update")
-    //     controlUser.updateUser(user)
-    // }
-    // else {
-    //     console.log("register")
-    //     controlUser.registerUser(user)
-    // }
-
+    if (userlistBeforeAdd.value == 0) {
+        controlUser.updateUser(user)
+    }
+    else {
         controlUser.registerUser(user)
+    }
 
-    // updatedUser.value = {
-    //     name: "",
-    //     score: "",
-    //     age: "",
-    //     editing: false
-    // }
 }
 const addUser = () => {
     users.value.push({ name: '', score: '', age: '', editing: true });
+    userlistBeforeAdd.value += 1
 }
 
 </script>
 
 <style scoped>
-/* CSS code */
 table {
     border-collapse: collapse;
     width: 100%;
@@ -159,7 +137,7 @@ button {
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    margin-right: 4px;
+    margin-right: 3px;
     text-align: center;
     text-decoration: none;
     text-transform: uppercase;

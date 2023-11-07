@@ -7,14 +7,15 @@ const { admin }: any = storeToRefs(main)
 const { pageStatus }: any = storeToRefs(main)
 
 const auth = useAuth()
+const controlUsers = useUsers()
 
 const goDashboard = () => {
-    const router = useRouter()
     if (pageStatus.value == true) {
-        router.push('/dashboard')
+        controlUsers.getAllUsers()
         pageStatus.value = false
         return
     }
+    const router = useRouter()
     router.push('/userlist')
     pageStatus.value = true
 }

@@ -9,9 +9,24 @@
 
 <script lang="ts" setup>
 definePageMeta({
-    layout: "userlist-header",
-    // middleware: "after-auth",
+    layout: "userlist-dashboard",
+    middleware: "after-auth"
 });
+
+import { useMainStore } from '~/store/main';
+import { storeToRefs } from 'pinia';
+
+const main = useMainStore()
+const { users }: any = storeToRefs(main)
+const { allUsers }: any = storeToRefs(main)
+import { ref } from 'vue';
+
+const forLabel = ref([])
+const forData = ref([])
+
+forLabel.value = allUsers.value.map((user: any) => user.name);
+
+forData.value = allUsers.value.map((user: any) => user.score);
 
 import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from 'chart.js'
 import { Bar } from 'vue-chartjs'
@@ -20,12 +35,12 @@ import { Bar } from 'vue-chartjs'
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
 
 const chartData = ref({
-    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'Norvember', 'December'],
+    labels: forLabel.value,
     datasets: [
         {
             label: 'Data One',
             backgroundColor: 'green',
-            data: [40, 20, 12, 50, 10, 70, 30, 60, 40, 90, 50, 80],
+            data: forData.value
         },
     ],
 })

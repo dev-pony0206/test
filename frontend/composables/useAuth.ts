@@ -24,7 +24,7 @@ export const useAuth = () => {
         }
     };
 
-    const signIn = async (user:any) => {
+    const signIn = async (user: any) => {
         try {
             const data: { token: string } = await $fetch(`${config.public.apiBase}/login/login`, {
                 method: "POST",

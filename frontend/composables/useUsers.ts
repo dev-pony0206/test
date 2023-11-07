@@ -7,6 +7,7 @@ export const useUsers = () => {
     const main = useMainStore()
     const { users }: any = storeToRefs(main)
     const { totalPages } = storeToRefs(main)
+    const { allUsers } = storeToRefs(main)
 
     const getUsers = async () => {
         try {
@@ -21,15 +22,30 @@ export const useUsers = () => {
             if (data) {
                 console.log(data)
                 var { paginatedUsers } = data;
-                if (Array.isArray(paginatedUsers)) {
-                    users.value = paginatedUsers.map((paginatedUser) => {
-                        return { ...paginatedUser, editing: false };
-                    });
-                }
-                pagenum.value += 1
+                users.value = paginatedUsers.map((paginatedUser: any) => {
+                    return { ...paginatedUser, editing: false };
+                });
                 totalPages.value = data.totalPages
                 users.value = data.paginatedUsers
                 console.log(data.paginatedUsers)
+            }
+        } catch (error: any) {
+            console.log(error);
+        }
+    };
+
+    const getAllUsers = async () => {
+        try {
+            const data: any = await $fetch(`${config.public.apiBase}/users/all`, {
+                method: "GET",
+                headers: {
+                    "x-auth-token": `${token.value}`,
+                },
+            });
+            if (data) {
+                const router = useRouter()
+                allUsers.value = data
+                await router.push('/dashboard')
             }
         } catch (error: any) {
             console.log(error);
@@ -46,24 +62,24 @@ export const useUsers = () => {
                 },
             });
             if (data) {
-                users.value = users.value.push(user)
+                getUsers()
             }
         } catch (error: any) {
             console.log(error);
         }
     };
 
-    const deleteUser = async (id: number) => {
+    const deleteUser = async (_id: string, id: number) => {
         try {
             const data: any = await $fetch(`${config.public.apiBase}/users/delete`, {
                 method: "post",
                 headers: {
                     "x-auth-token": `${token.value}`,
                 },
-                body: { id: id }
+                body: { id: _id }
             });
             if (data) {
-                 users.value.splice(id, 1)
+                users.value.splice(id, 1)
             }
         } catch (error: any) {
             console.log(error);
@@ -80,9 +96,7 @@ export const useUsers = () => {
                 body: payload
             });
             if (data) {
-                console.log(data)
                 const updateIndex = users.value.findIndex((user: { id: any; }) => user.id === payload.id)
-                console.log(updateIndex)
                 users.value[updateIndex] = { ...users.value[updateIndex], name: payload.name, score: payload.score, age: payload.age }
             }
         } catch (error: any) {
@@ -91,6 +105,6 @@ export const useUsers = () => {
     };
 
     return {
-        getUsers, registerUser, deleteUser, updateUser
+        getUsers, registerUser, deleteUser, updateUser, getAllUsers
     };
 };

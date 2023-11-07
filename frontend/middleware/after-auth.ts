@@ -1,5 +1,7 @@
 export default defineNuxtRouteMiddleware((to,from) => {
-    if (!localStorage.admin && to.path !== '/' && to.path !== '/signup') {
+    const cookie = useCookie('token')
+    if (!cookie.value && to.path !== '/' && to.path !== '/signup') {
         return navigateTo({ name: "index" }); 
-    }
+    } 
 });
+    
