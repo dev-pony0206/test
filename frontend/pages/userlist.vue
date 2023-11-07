@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full h-screen flex justify-center items-center">
+    <div class="w-full h-screen flex justify-center mt-24">
         <div class="w-9/12">
             <table>
                 <thead>
@@ -35,7 +35,7 @@
                         <td>
                             <button v-if="!user.editing" class="edit-button" @click="editUser(user)">Edit</button>
                             <button v-if="user.editing" class="save-button" @click="saveUser(user)">Save</button>
-                            <button class="delete-button" @click="deleteUser(id)">Delete</button>
+                            <button class="delete-button" @click="deleteUser(user._id)">Delete</button>
                         </td>
                     </tr>
                 </tbody>
@@ -50,7 +50,7 @@
   
 <script lang="ts" setup>
 definePageMeta({
-    layout: "userlist-header",
+    layout: "userlist-dashboard",
     // middleware: "after-auth",
 });
 
@@ -84,22 +84,25 @@ const { page }: any = storeToRefs(main)
 const { totalPages }: any = storeToRefs(main)
 
 const deleteUser = (id: number) => {
-    // controlUser.deleteUser(id)
-    users.value.splice(id, 1)
+    controlUser.deleteUser(id)
+    // users.value.splice(id, 1)
 }
 const editUser = (user: any) => {
     user.editing = true
 }
 const saveUser = (user: any) => {
     user.editing = false
-    if (userlistBeforeAdd.length == users.length) {
-        console.log("update")
-        controlUser.updateUser(user)
-    }
-    else {
-        console.log("register")
+    // if (userlistBeforeAdd.length == users.length) {
+    //     console.log("update")
+    //     controlUser.updateUser(user)
+    // }
+    // else {
+    //     console.log("register")
+    //     controlUser.registerUser(user)
+    // }
+
         controlUser.registerUser(user)
-    }
+
     // updatedUser.value = {
     //     name: "",
     //     score: "",

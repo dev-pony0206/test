@@ -6,10 +6,11 @@ const cors = require("cors");
 const app = express();
 
 var corsOptions = {
-  origin: "http://127.0.0.1:3000"
+  origin: "http://localhost:3000"
 };
 
 app.use(cors(corsOptions));
+// app.use(cors())
 
 // Connect Database
 connectDB();
@@ -29,7 +30,7 @@ app.use("/api/users", require("./routes/api/users"));
 // Serve static assets in production
 if (process.env.NODE_ENV === "production") {
   // Set static folder
-  app.use(express.static("frontend/build"));
+  app.use(express.static("frontend/.output"));
 
   app.get("*", (req, res) => {
     res.sendFile(path.resolve(__dirname, "frontend", "build", "index.html"));

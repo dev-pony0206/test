@@ -1,9 +1,9 @@
 export default defineNuxtPlugin((nuxtApp) => {
-    nuxtApp.hook("page:finish", () => {
+    nuxtApp.hook("page:finish",async () => {
         const users = useUsers();
-        console.log("testing plugin")
-        if (localStorage.admin && window.location.pathname == '/userlist' ) {
-            users.getUsers()
+        const cookie = useCookie('token')
+        if (cookie.value && window.location.pathname == '/userlist' ) {
+            await users.getUsers()
         }
     });
 });

@@ -5,7 +5,7 @@ const cors = require("cors");
 
 const User = require("../../models/User");
 const auth = require("../../middleware/auth");
-const upload = require("../../middleware/multer");
+// const upload = require("../../middleware/multer");
 
 // middle ware
 express().use(express.static("public")); //to access the files in public folder
@@ -13,25 +13,15 @@ express().use(cors()); // it enables all cors requests
 
 router.post(
   "/register",
-  [
     auth,
-    check("name", "Name is required").exists(),
-    check("Score", "Score must be required").exists(),
-    check("age", "Age is required").exists()
-  ],
   async (req, res) => {
-    const errors = validationResult(req);
-
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
 
     const { name, score, age } = req.body;
 
     try {
       let user = await User.findOne({ name });
 
-      if (user) {
+      if (user) { 
         return res
           .status(400)
           .json({ errors: [{ msg: "user already exists" }] });
@@ -40,9 +30,8 @@ router.post(
       user = new User({
         name,
         score,
-        age        
+        age
       });
-
       await user.save();
 
       res.send("Registered Successfully!");
@@ -56,21 +45,24 @@ router.post(
 router.get("/list", auth, async (req, res) => {
   try {
     const page = parseInt(req.query.page);
-    const pageSize = parseInt(req.query.pageSize);
+    const pageSize = parseInt(req.query.size); 
 
     // Calculate the start and end indexes for the requested page
     const startIndex = (page - 1) * pageSize;
-    const endIndex = page * pageSize;
+    const endIndex = page * pageSize - 1;
 
     // Slice the users array based on the indexes
-    const users = await User.find(filter);
-    const paginatedUsers = users.slice(startIndex, endIndex);
+    const users = await User.find({});
+    const paginatedUsers =
+      endIndex >= users.length - 1
+        ? users.slice(startIndex, users.length)
+        : users.slice(startIndex, endIndex + 1);
 
     // Calculate the total number of pages
-    const totalPages = Math.ceil(products.length / pageSize);
+    const totalPages = Math.ceil(users.length / pageSize);
 
     // Send the paginated users and total pages as the API response
-    res.send({ users: paginatedUsers, totalPages });
+    res.send({ paginatedUsers, totalPages });
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server error");
@@ -79,8 +71,7 @@ router.get("/list", auth, async (req, res) => {
 
 router.post("/update", auth, async (req, res) => {
   try {
-    const id = req.body.id;
-
+    const id = req.body._id;
     await User.findByIdAndUpdate(id, {
       name: req.body.name,
       score: req.body.score,
@@ -99,7 +90,7 @@ router.post("/delete", auth, async (req, res) => {
   try {
     const id = req.body.id;
     await User.findByIdAndDelete(id);
-    res.send("success");
+    res.json("success");
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server error");

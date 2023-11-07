@@ -18,7 +18,7 @@ const signIn = useAuth();
         <div class="border-4 border-purple-900 rounded-3xl p-12 bg-blue-900">
             <form
                 class="font-display space-y-4 >* w-80"
-                @submit.prevent="signIn.signIn(signInUser.email,signInUser.password )"
+                @submit.prevent="signIn.signIn(signInUser)"
             >
                 <p class="text-white text-center text-5xl pb-4">Sign in</p>
                 <label for="email" class="text-white text-2xl">Email</label>

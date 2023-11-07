@@ -15,24 +15,12 @@ express().use(cors()); // it enables all cors requests
 
 router.post(
   "/signup",
-  // check("name", "Name is required").notEmpty(),
-  // check("email", "Please include a valid email").isEmail(),
-  // check(
-  //   "password",
-  //   "Please enter a password with 6 or more characters"
-  // ).isLength({ min: 6 }),
 
   upload.single("file"),
   async (req, res) => {
-    console.log("coming")
-    // const errors = validationResult(req);
-
-    // if (!errors.isEmpty()) {
-    //   return res.status(400).json({ errors: errors.array() });
-    // }
 
     const { name, email, password } = req.body;
-    const { photo } = req.file;
+    const  photo  = req.file.filename;
 
     try {
       let admin = await Admin.findOne({ email });

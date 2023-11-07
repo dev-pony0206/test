@@ -11,7 +11,7 @@ const signupUser: SignupAdmin = {
     photo: null,
 };
 
-const avatarUrl = () => useState<any>("url", () => "_nuxt/assets/image/userAccount.png");
+const avatarUrl = () => useState<any>("url", () => "_nuxt/public/userAccount.png");
 
 const url = avatarUrl();
 
@@ -24,16 +24,16 @@ const chooseFile = () => {
 
 const submit = () => {
     const formData = new FormData();
-    formData.append("username", signupUser.username);
+    formData.append("name", signupUser.username);
     formData.append("email", signupUser.email);
     formData.append("password", signupUser.password);
-    formData.append("avatar", signupUser.photo);
+    formData.append("file", signupUser.photo);
     signupUser.username = "";
     signupUser.email = "";
     signupUser.password = ""
     const signup = useAuth();
     signup.signup(formData);
-    url.value = "_nuxt/assets/image/userAccount.png";
+    url.value = "_nuxt/public/userAccount.png";
 };
 </script>
 

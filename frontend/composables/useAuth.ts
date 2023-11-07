@@ -11,8 +11,6 @@ export const useAuth = () => {
 
     const signup = async (formData: any) => {
         try {
-            // const router = useRouter();
-            // router.push({ path: "/" });
             const data = await $fetch(`${config.public.apiBase}/signup/signup`, {
                 method: "POST",
                 body: formData,
@@ -26,16 +24,11 @@ export const useAuth = () => {
         }
     };
 
-    const signIn = async (email: string, password: string) => {
+    const signIn = async (user:any) => {
         try {
-            // const router = useRouter();
-            // router.push({ path: "/userlist" });
-            const data: { token: string } = await $fetch(`${config.public.apiBase}/login`, {
+            const data: { token: string } = await $fetch(`${config.public.apiBase}/login/login`, {
                 method: "POST",
-                body: {
-                    email,
-                    password,
-                },
+                body: user
             });
             if (data) {
                 const decoded: any = jwtDecode(data.token);

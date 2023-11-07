@@ -5,7 +5,7 @@ export interface SignupAdmin {
   photo?: any;
 }
 
-export type SignInAdmin = Omit<SignupAdmin, "username" | "avatar">;
+export type SignInAdmin = Omit<SignupAdmin, "username" | "photo">;
 
 export interface User {
     name: string;

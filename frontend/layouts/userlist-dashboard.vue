@@ -18,7 +18,6 @@ const goDashboard = () => {
     router.push('/userlist')
     pageStatus.value = true
 }
-// const hiddenbutton = () => { return pageStatus.value == false ? "hidden" : "" }
 </script>
 
 <template>
@@ -26,13 +25,11 @@ const goDashboard = () => {
         <header>
             <nav class="w-full">
                 <div class="flex w-full px-16 py-3 border-b-2 justify-between">
-                    <div class="">
-                        <img :src="admin.photo" class="" />
-                        {{ admin.name }}
+                    <div class="flex justify-center items-center">
+                        <img :src="admin.photo" class="w-10 h-10 mr-4 rounded-full" />
+                        <p class="text-2xl font-bold">{{ admin.name }}</p>
                     </div>
                     <div class="flex space-x-4 >* text-3xl">
-                        <!-- <button class="bg-green-950 text-white rounded-md w-52" @click.prevent=""
-                            :class="hiddenbutton()">ADD</button> -->
                         <button class="bg-amber-900 text-white rounded-md w-52" @click.prevent="goDashboard()">{{ pageStatus
                             == true ? "DASHBOARD" : "USERLIST" }}</button>
                         <button class="bg-red-950 text-white rounded-md w-52" @click.prevent="auth.logout()">LOGOUT</button>

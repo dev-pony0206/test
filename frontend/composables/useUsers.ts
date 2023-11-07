@@ -12,23 +12,24 @@ export const useUsers = () => {
         try {
             const pagenum = storeToRefs(main).page
 
-            const data: any = await $fetch(`${config.public.apiBase}/users/list?page=${pagenum}&size=5`, {
+            const data: any = await $fetch(`${config.public.apiBase}/users/list?page=${pagenum.value}&size=5`, {
                 method: "GET",
                 headers: {
-                    Authorization: `${token.value}`,
+                    "x-auth-token": `${token.value}`,
                 },
             });
             if (data) {
-                async () => {
-                    var { paginatedUsers } = data.users;
-                    if (Array.isArray(paginatedUsers)) {
-                        users.value = paginatedUsers.map((paginatedUser) => {
-                            return { ...paginatedUser, editing: false };
-                          });
-                    }
-                    pagenum.value += 1
-                    totalPages.value = data.users.totalPages
+                console.log(data)
+                var { paginatedUsers } = data;
+                if (Array.isArray(paginatedUsers)) {
+                    users.value = paginatedUsers.map((paginatedUser) => {
+                        return { ...paginatedUser, editing: false };
+                    });
                 }
+                pagenum.value += 1
+                totalPages.value = data.totalPages
+                users.value = data.paginatedUsers
+                console.log(data.paginatedUsers)
             }
         } catch (error: any) {
             console.log(error);
@@ -39,10 +40,13 @@ export const useUsers = () => {
         try {
             const data = await $fetch(`${config.public.apiBase}/users/register`, {
                 method: "POST",
-                body: user
+                body: user,
+                headers: {
+                    "x-auth-token": `${token.value}`,
+                },
             });
             if (data) {
-                users.value = users.push(user)
+                users.value = users.value.push(user)
             }
         } catch (error: any) {
             console.log(error);
@@ -51,16 +55,15 @@ export const useUsers = () => {
 
     const deleteUser = async (id: number) => {
         try {
-
             const data: any = await $fetch(`${config.public.apiBase}/users/delete`, {
                 method: "post",
                 headers: {
-                    Authorization: `${token.value}`,
+                    "x-auth-token": `${token.value}`,
                 },
                 body: { id: id }
             });
             if (data) {
-                users.value.splice(id, 1)
+                 users.value.splice(id, 1)
             }
         } catch (error: any) {
             console.log(error);
@@ -69,14 +72,10 @@ export const useUsers = () => {
 
     const updateUser = async (payload: any) => {
         try {
-            const updateIndex = users.value.findIndex((user: { id: any; }) => user.id === payload.id)
-            console.log(updateIndex)
-            users.value[updateIndex] = { ...users.value[updateIndex], name: payload.name, score: payload.score, age: payload.age }
-
             const data: any = await $fetch(`${config.public.apiBase}/users/update`, {
                 method: "post",
                 headers: {
-                    Authorization: `${token.value}`,
+                    "x-auth-token": `${token.value}`,
                 },
                 body: payload
             });
